@@ -1,0 +1,56 @@
+# Initial workflow for OE Builds
+
+name: build
+
+# Controls when the action will run.
+on:
+  # No merge or pr triggers yet
+
+  # Allow workflow to be manually run from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  # This workflow contains a single job called "build"
+  build-x86:
+    # The type of runner that the job will run on
+    runs-on:
+        labels: big-job-x86-ubuntu-22.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Build Host
+        run: |
+          ./scripts/build-host-setup.sh
+
+      - name: check PATH
+        run: echo "$PATH"
+
+      - name: Use Kas to build
+        run: "kas build ci/genericarm64.yml"
+
+      - name: show file stats
+        run:  |
+              du -sh build/sstate-cache/      || true
+              du -sh build/downloads/         || true
+              du -sh build/tmp/deploy/images/ || true
+              du -sh build/tmp/deploy/ipk     || true
+              cat build/tmp/buildstats/20*/build_stats || true
+
+      - name: After stats
+        run:  echo After stats
+
+      - name: Archive Images
+        uses: actions/upload-artifact@v4
+        with:
+          name: images
+          path: |
+            build/tmp/deploy/images
+
+      - name: Archive Packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: |
+            build/tmp/deploy/ipk
