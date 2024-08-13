@@ -1,5 +1,8 @@
 #!/bin/bash
 
+ME=$0
+MY_DIR=$(dirname $ME)
+
 # setup host for building
 sudo apt-get -qq update
 
@@ -13,14 +16,10 @@ fi
 sudo apt-get install -qqy gawk wget git-core diffstat unzip texinfo \
   build-essential chrpath socat cpio python3 python3-pip \
   python3-pexpect xz-utils debianutils iputils-ping curl git \
-  zstd libssl-dev lz4
+  zstd libssl-dev lz4 python3-pip python3-venv
 
 # we need kas
 if ! which kas; then
-    pip3 install kas
-    if ! which kas; then
-        # fix up for this time, assume .bashrc will get it next time
-        PATH=~/.local/bin:$PATH
-    fi
+    $MY_DIR/venv-wrapper install self-copy
+    $MY_DIR/venv-wrapper install kas kas
 fi
-
