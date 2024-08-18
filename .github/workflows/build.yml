@@ -4,7 +4,10 @@ name: build
 
 # Controls when the action will run.
 on:
-  # No merge or pr triggers yet
+  # push to any branch named wip-test-*
+  push:
+    branches:
+      - 'wip-test-*'
 
   # Allow workflow to be manually run from the Actions tab
   workflow_dispatch:
@@ -50,11 +53,25 @@ jobs:
       - name: Do build
         run: |
             TARGET="${{ inputs.target }}"
-            if ${{ inputs.quick_test }} ; then
+
+            # if no target specified (ex. push to wip-test-*), find one
+            if [ -z "$TARGET" ]; then
+              for t in ci/ci-job.sh ci/ci-job.yml ci/genericarm64.yml; do
+                if [ -r "$t" ]; then
+                  TARGET="$t"
+                  break
+                fi
+              done
+            fi
+
+            # if this a "quick test"?
+            if [ x"${{ inputs.quick_test }}" == x"true" ]; then
               QUICK_TEST_ARG=":mixins/quick-test.yml"
             else
               QUICK_TEST_ARG=""
             fi
+
+            # now handle kas vs shell script
             case $TARGET in
             *.yml)
                 kas build ${TARGET}${QUICK_TEST_ARG}
