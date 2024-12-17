@@ -19,8 +19,10 @@ repos:
       meta-poky:
       meta-yocto-bsp:
   layers/meta-openamp:
-    url: https://github.com/openamp/meta-openamp.git
-    refspec: master
+    #url: https://github.com/openamp/meta-openamp.git
+    #refspec: master
+    url: https://github.com/wmamills/meta-openamp.git
+    refspec: wam-update-layer-conf
     layers:
       .:
 
