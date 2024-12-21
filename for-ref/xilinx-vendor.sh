@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # set the default but allow override from the user environment
-: ${RELEASE:=xlnx-rel-v2024.1}
+: ${RELEASE:=xlnx-rel-v2024.2}
 : ${REL_TYPE:=tag}
 
 # the following is a grep key, don't change it
@@ -27,7 +27,7 @@ sudo apt-get update
 # Ubuntu 20.04 uses libtinfo6 when you install libtinfo-dev
 sudo apt-get install -y chrpath diffstat gawk qemu-utils curl \
     build-essential python3-distutils libtinfo5 libtinfo-dev \
-    libidn11-dev libgmp3-dev zstd
+    libidn11-dev libgmp3-dev zstd libudev-dev
 
 # repo will work if python is python2 or python3 but it needs to be something
 # if the user already has one don't touch it
@@ -92,6 +92,8 @@ $REPO forall -c git reset --hard
 source setupsdk
 
 # at this point the PWD will be $XILINX_YOCTO_ROOT/build
+# DISABLE THIS, this does not work for 2024.2 and may not be needed anymore
+if false; then
 echo 'IMAGE_INSTALL:append = " \
     packagegroup-petalinux-openamp \
     kernel-module-zynqmp-r5-remoteproc \
@@ -99,6 +101,7 @@ echo 'IMAGE_INSTALL:append = " \
     kernel-module-rpmsg-ns \
     kernel-module-virtio-rpmsg-bus \
 " ' >>conf/local.conf
+fi
 
 # do real build step
 if [ -n "$FAKE_IT" ]; then
@@ -135,11 +138,11 @@ echo "*** build bit file to avoid race condition"
 MACHINE=zcu102-zynqmp bitbake virtual/bitstream
 
 echo "*** building image for zcu102"
-MACHINE=zcu102-zynqmp bitbake openamp-image-minimal
+MACHINE=zcu102-zynqmp bitbake petalinux-image-minimal
 
 # The kv260 BOOT.bin does not have any bit file so no race condition
 echo "*** building image for kv260"
-MACHINE=k26-smk-kv bitbake openamp-image-minimal
+MACHINE=k26-smk-kv bitbake petalinux-image-minimal
 
 # In 2024.1, building an image does not build the boot.bin file even though it
 # builds all the components (fsbl, tfa, u-boot)
@@ -148,6 +151,9 @@ MACHINE=k26-smk-kv bitbake openamp-image-minimal
 #
 # Therefore, do an explicit build of xilinx-bootbin
 MACHINE=k26-smk-kv bitbake xilinx-bootbin
+
+# NOTE: emb-plus-ve2302-sdt does not work, gets a bitbake dependency loop
+MACHINE=emb-plus-ve2302 bitbake emb-plus-image-minimal emb-plus-apu-image emb-plus-ospi
 
 # There are a lot of variations of the file systems that we really don't need
 # This loses no real value and decreases the deploy/image dir
