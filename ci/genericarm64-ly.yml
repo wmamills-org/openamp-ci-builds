@@ -15,8 +15,6 @@ local_conf_header:
     # nothing needed
   kernel-selection: |
     PREFERRED_PROVIDER_virtual/kernel = "linux-yocto"
-  extra-packages: |
-    EXTRA_IMAGE_FEATURES:append = " debug-tweaks ssh-server-dropbear"
   bugs: |
     # Only ping until errors can be resolved
     TEST_SUITES = "ping"

@@ -44,7 +44,7 @@ local_conf_header:
   extra-packages: |
     PACKAGE_INSTALL_EXTRAS = "rsync iproute2 dropbear kernel-modules"
     IMAGE_INSTALL:append = " ${PACKAGE_INSTALL_EXTRAS} "
-    EXTRA_IMAGE_FEATURES:append = " debug-tweaks ssh-server-dropbear"
+    EXTRA_IMAGE_FEATURES:append = " allow-empty-password allow-root-login empty-root-password ssh-server-dropbear"
   kernel-selection:
     PREFERRED_PROVIDER_virtual/kernel = "linux-openamp"
 
