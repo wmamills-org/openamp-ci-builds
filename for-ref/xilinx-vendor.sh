@@ -23,11 +23,27 @@ if [ x"$1" == x"-d" ]; then set -x; shift; fi
 sudo apt-get update
 
 # Yocto/OE requirements
-# Xilinx xsct binary needs explictly libtinfo5.
 # Ubuntu 20.04 uses libtinfo6 when you install libtinfo-dev
 sudo apt-get install -y chrpath diffstat gawk qemu-utils curl \
-    build-essential python3-distutils libtinfo5 libtinfo-dev \
+    build-essential python3 python3-pip libncurses-dev \
     libidn11-dev libgmp3-dev zstd libudev-dev
+
+# Xilinx xsct binary needs explictly libtinfo5
+# which is not available in Ubuntu 24.04
+# workaround #1, not preferred as this package may go away
+# ref: https://github.com/centennialsoftwaresolutions/help/blob/main/petalinux/PetaLinux_2023.1_on_Ubuntu_24.04.1.md
+if false; then
+    PKG=libtinfo5_6.3-2ubuntu0.1_amd64.deb
+    wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/$PKG
+    sudo apt install ./$PKG
+fi
+
+# workaround #2, preferred
+# ref: https://light-space.org/Ubuntu24041-an-zhuang-Vivado20241?locale=en
+LIB=/lib/x86_64-linux-gnu/libtinfo.so
+if [ ! -e ${LIB}.5 ]; then
+    sudo ln -s ${LIB}.6 ${LIB}.5
+fi
 
 # repo will work if python is python2 or python3 but it needs to be something
 # if the user already has one don't touch it
