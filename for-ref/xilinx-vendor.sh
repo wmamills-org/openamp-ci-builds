@@ -170,7 +170,7 @@ MACHINE=k26-smk-kv bitbake petalinux-image-minimal
 MACHINE=k26-smk-kv bitbake xilinx-bootbin
 
 # NOTE: emb-plus-ve2302-sdt does not work, gets a bitbake dependency loop
-MACHINE=emb-plus-ve2302 bitbake emb-plus-image-minimal emb-plus-apu-image emb-plus-ospi
+#MACHINE=emb-plus-ve2302 bitbake emb-plus-image-minimal emb-plus-apu-image emb-plus-ospi
 
 # There are a lot of variations of the file systems that we really don't need
 # This loses no real value and decreases the deploy/image dir
