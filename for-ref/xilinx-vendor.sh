@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # set the default but allow override from the user environment
-: ${RELEASE:=xlnx-rel-v2024.2}
+: ${RELEASE:=xlnx-rel-v2025.1}
 : ${REL_TYPE:=tag}
 
 # the following is a grep key, don't change it
