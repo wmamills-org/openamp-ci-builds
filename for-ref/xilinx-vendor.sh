@@ -53,6 +53,10 @@ if ! which python; then
     sudo apt-get install python-is-python3
 fi
 
+# Ubuntu 24.04 does not allow bitbake to use namespaces by default
+# I could not find a bitbake specific fix already crafted
+# This disables this restriction for the current boot cycle
+sudo apparmor_parser -R /etc/apparmor.d/unprivileged_userns || true
 
 REPO=~/.local/bin/repo
 
